@@ -52,3 +52,7 @@ func RegisterBroadcaster(register_json []byte) (BroadcasterID, error) {
 
 	return broadcaster_id, nil
 }
+
+func UnregisterBroadcaster(broadcaster_id BroadcasterID) error {
+	return nil
+}

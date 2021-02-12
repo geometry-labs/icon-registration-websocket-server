@@ -57,25 +57,34 @@ func (ws *KafkaWebsocketServer) readAndFilterKafkaTopic(w http.ResponseWriter, r
 
 			broadcaster_ids = append(broadcaster_ids, broadcaster_id)
 			_ = c.WriteMessage(websocket.TextMessage, []byte(`{"error": ""}`))
+
+			defer func() {
+				log.Printf("Unregister: %s\n", string(broadcaster_id))
+			}()
+		}
+	}()
+
+	// Write to websocket connection
+	go func() {
+		for {
+			// Read
+			msg := <-ws.TopicChan
+
+			// TODO filter
+
+			// Broadcast
+			err = c.WriteMessage(websocket.TextMessage, msg.Value)
+			if err != nil {
+				break
+			}
 		}
 	}()
 
 	for {
-		// Read
-		msg := <-ws.TopicChan
-
-		// TODO filter
-
-		// Broadcast
-		err = c.WriteMessage(websocket.TextMessage, msg.Value)
-		if err != nil {
-			break
-		}
-
 		// check for client close
 		select {
 		case _ = <-client_close_sig:
-			break
+			return
 		default:
 			continue
 		}

@@ -57,7 +57,6 @@ func main() {
 
 	// Start server
 	go websocket_server.ListenAndServe()
-
 	log.Printf("Server listening on port %s...", port_env)
 
 	// Keep main thread alive
