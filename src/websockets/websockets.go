@@ -59,7 +59,11 @@ func (ws *KafkaWebsocketServer) readAndFilterKafkaTopic(w http.ResponseWriter, r
 			_ = c.WriteMessage(websocket.TextMessage, []byte(`{"error": ""}`))
 
 			defer func() {
-				log.Printf("Unregister: %s\n", string(broadcaster_id))
+				err := registration.UnregisterBroadcaster(broadcaster_id)
+				log.Printf("UNREG: %s", string(broadcaster_id))
+				if err != nil {
+					log.Printf("Error unregistering: %s", err.Error())
+				}
 			}()
 		}
 	}()

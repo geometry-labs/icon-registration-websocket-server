@@ -54,5 +54,35 @@ func RegisterBroadcaster(register_json []byte) (BroadcasterID, error) {
 }
 
 func UnregisterBroadcaster(broadcaster_id BroadcasterID) error {
+
+	if registrationURL == "" {
+		return errors.New("registration url not set")
+	}
+
+	endpoint := "http://" + registrationURL + "/broadcaster/unregister"
+	unregister_json := []byte(fmt.Sprintf(
+		`{"broadcaster_id": "%s"}`,
+		string(broadcaster_id),
+	))
+
+	resp, err := http.Post(endpoint, "application/json", bytes.NewBuffer(unregister_json))
+	if err != nil {
+		return err
+	}
+
+	// Read response
+	defer resp.Body.Close()
+	resp_body_raw, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return errors.New("Cannot read reponse from unregistraion")
+	}
+
+	if resp.StatusCode != 200 {
+		error_msg := fmt.Sprintf("Invalid unregistration response: %d - %s", resp.StatusCode, string(resp_body_raw))
+
+		return errors.New(error_msg)
+	}
+
+	// 200 response
 	return nil
 }
