@@ -6,6 +6,8 @@ import (
 
 	"github.com/gorilla/websocket"
 	"gopkg.in/confluentinc/confluent-kafka-go.v1/kafka"
+
+	"kafka-websocket-server/registration"
 )
 
 type KafkaWebsocketServer struct {
@@ -35,11 +37,11 @@ func (ws *KafkaWebsocketServer) readAndFilterKafkaTopic(w http.ResponseWriter, r
 	}
 	defer c.Close()
 
-	// close signal
+	// Close signal from client
 	client_close_sig := make(chan bool)
 
 	// Read for registrations
-	// broadcaster_ids := make([]string, 0, 0)
+	broadcaster_ids := make([]registration.BroadcasterID, 0, 0)
 	go func() {
 		for {
 			_, msg_raw, err := c.ReadMessage()
@@ -48,14 +50,21 @@ func (ws *KafkaWebsocketServer) readAndFilterKafkaTopic(w http.ResponseWriter, r
 				break
 			}
 
-			log.Println(string(msg_raw))
+			broadcaster_id, err := registration.RegisterBroadcaster(msg_raw)
+			if err != nil {
+				_ = c.WriteMessage(websocket.TextMessage, []byte(`{"error": "failed to register"}`))
+			}
 
+			broadcaster_ids = append(broadcaster_ids, broadcaster_id)
+			_ = c.WriteMessage(websocket.TextMessage, []byte(`{"error": ""}`))
 		}
 	}()
 
 	for {
 		// Read
 		msg := <-ws.TopicChan
+
+		// TODO filter
 
 		// Broadcast
 		err = c.WriteMessage(websocket.TextMessage, msg.Value)
