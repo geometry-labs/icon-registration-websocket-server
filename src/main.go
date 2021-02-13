@@ -3,6 +3,8 @@ package main
 import (
 	"log"
 	"os"
+	"os/signal"
+	"syscall"
 
 	"gopkg.in/confluentinc/confluent-kafka-go.v1/kafka"
 
@@ -59,7 +61,18 @@ func main() {
 	go websocket_server.ListenAndServe()
 	log.Printf("Server listening on port %s...", port_env)
 
+	// Listen for close sig
+	sigCh := make(chan os.Signal)
+	signal.Notify(sigCh, os.Interrupt, syscall.SIGTERM, syscall.SIGKILL)
+
 	// Keep main thread alive
 	for {
+		select {
+		case <-sigCh:
+			log.Println("Stopping server...")
+			return
+		default:
+			continue
+		}
 	}
 }

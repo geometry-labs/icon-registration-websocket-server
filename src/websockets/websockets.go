@@ -1,6 +1,7 @@
 package websockets
 
 import (
+	"encoding/json"
 	"log"
 	"net/http"
 
@@ -74,12 +75,20 @@ func (ws *KafkaWebsocketServer) readAndFilterKafkaTopic(w http.ResponseWriter, r
 			// Read
 			msg := <-ws.TopicChan
 
-			// TODO filter
+			var broadcaster_ids_key []string
+			_ = json.Unmarshal(msg.Key, &broadcaster_ids_key)
 
-			// Broadcast
-			err = c.WriteMessage(websocket.TextMessage, msg.Value)
-			if err != nil {
-				break
+			// Compare local registered ids to msg registered ids
+			for _, b := range broadcaster_ids {
+				for _, bk := range broadcaster_ids_key {
+					if string(b) == bk {
+						// Broadcast
+						err = c.WriteMessage(websocket.TextMessage, msg.Value)
+						if err != nil {
+							break
+						}
+					}
+				}
 			}
 		}
 	}()
