@@ -19,6 +19,7 @@ func main() {
 	broker_url_env := os.Getenv("ICON_REGISTRATION_WEBSOCKET_BROKER_URL")
 	registration_url_env := os.Getenv("ICON_REGISTRATION_WEBSOCKET_REGISTRATION_URL")
 	port_env := os.Getenv("ICON_REGISTRATION_WEBSOCKET_PORT")
+	prefix_env := os.Getenv("ICON_REGISTRATION_WEBSOCKET_PREFIX")
 
 	if broker_url_env == "" {
 		log.Println("ERROR: required enviroment variable missing: ICON_REGISTRATION_WEBSOCKET_BROKER_URL")
@@ -33,6 +34,9 @@ func main() {
 	}
 	if port_env == "" {
 		port_env = "3000"
+	}
+	if prefix_env == "" {
+		prefix_env = ""
 	}
 
 	// Set registration url
@@ -50,16 +54,18 @@ func main() {
 
 	// Start consumer
 	go kafka_consumer.ConsumeAndBroadcastTopics()
+	log.Println("Kafka consumer started...")
 
 	// Create server
 	websocket_server := websockets.KafkaWebsocketServer{
 		output_topic_chan,
 		port_env,
+		prefix_env,
 	}
 
 	// Start server
 	go websocket_server.ListenAndServe()
-	log.Printf("Server listening on port %s...", port_env)
+	log.Printf("Server listening on port :%s%s/...", port_env, prefix_env)
 
 	// Listen for close sig
 	sigCh := make(chan os.Signal)

@@ -42,12 +42,13 @@ go build -o main .
 
 ## Docker build
 ```
-docker build . -t icon-registration-websocket-server:latest
+docker build . -t icon-registration-websocket-server:latest --target prod
 docker run \
   -p "3000:3000" \
   -e ICON_REGISTRATION_WEBSOCKET_OUTPUT_TOPIC="outputs"
   -e ICON_REGISTRATION_WEBSOCKET_BROKER_URL="kafka:9092"
   -e ICON_REGISTRATION_WEBSOCKET_PORT="3000"
+  -e ICON_REGISTRATION_WEBSOCKET_PREFIX="/ws/reg"
   kafka-websocket-server:latest
 ```
 
@@ -56,5 +57,6 @@ docker run \
 | Name | Description | Default | Required |
 |------|-------------|---------|----------|
 | ICON_REGISTRATION_WEBSOCKET_BROKER_URL | location of broker | NULL | True |
-| ICON_REGISTRATION_WEBSOCKET_OUTPUT_TOPIC | name of topic where all filtered data will be | "output" | False |
+| ICON_REGISTRATION_WEBSOCKET_OUTPUT_TOPIC | name of topic where all filtered data will be | "outputs" | False |
 | ICON_REGISTRATION_WEBSOCKET_PORT | port to expose for websocket connections | "3000" | False |
+| ICON_REGISTRATION_WEBSOCKET_PREFIX | prefix for websocket endpoints	 | "" | False |
