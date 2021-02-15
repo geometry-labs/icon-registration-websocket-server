@@ -13,6 +13,9 @@ COPY ./src .
 # BUILD
 RUN go build -o main .
 
-FROM ubuntu
+FROM ubuntu as prod
 COPY --from=builder /build/main /
 CMD ["/main"]
+
+FROM builder as test
+RUN go test ./.../ -v -timeout 15m

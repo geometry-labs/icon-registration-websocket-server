@@ -1,0 +1,24 @@
+name: Push to Master CI
+
+# For all pushes to the main branch run the tests and push the image to the
+# GitHub registry under an edge tag so we can use it for the nightly
+# integration tests
+on:
+  push:
+    branches: main
+
+jobs:
+  docker:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Build the stack
+        run: docker-compose -f docker-compose.test.yml up -d
+
+      - name: Check running containers
+        run: docker-compose -f docker-compose.test.yml ps
+
+      - name: Check logs
+        run: docker-compose -f docker-compose.test.yml logs kafka-registration-websocket-server
