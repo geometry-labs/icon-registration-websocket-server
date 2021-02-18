@@ -86,10 +86,7 @@ func (ws *KafkaWebsocketServer) readAndFilterKafkaTopic(w http.ResponseWriter, r
 				for _, bk := range broadcaster_ids_key {
 					if string(b) == bk {
 						// Broadcast
-						err = c.WriteMessage(websocket.TextMessage, msg.Value)
-						if err != nil {
-							break
-						}
+						_ = c.WriteMessage(websocket.TextMessage, msg.Value)
 					}
 				}
 			}
