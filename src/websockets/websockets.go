@@ -84,11 +84,19 @@ func (ws *KafkaWebsocketServer) readAndFilterKafkaTopic(w http.ResponseWriter, r
 			_ = json.Unmarshal(msg.Key, &broadcaster_ids_key)
 
 			// Compare local registered ids to msg registered ids
+			wrote_flag := false
 			for _, b := range broadcaster_ids {
+				if wrote_flag == true {
+					break
+				}
 				for _, bk := range broadcaster_ids_key {
 					if string(b) == bk {
 						// Broadcast
 						_ = c.WriteMessage(websocket.TextMessage, msg.Value)
+
+						// Raise flag to cancel duplicate messages
+						wrote_flag = true
+						break
 					}
 				}
 			}

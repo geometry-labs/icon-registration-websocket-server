@@ -3,6 +3,7 @@ package websockets
 import (
 	"encoding/json"
 	"fmt"
+	"os"
 	"testing"
 	"time"
 
@@ -26,7 +27,7 @@ func TestRegistrationWebsocketServer(t *testing.T) {
 	go websocket_server.ListenAndServe()
 
 	// Set Register URL
-	registration_url_env := "35.160.158.191:8008" // os.Getenv("ICON_REGISTRATION_WEBSOCKET_REGISTRATION_URL")
+	registration_url_env := os.Getenv("ICON_REGISTRATION_WEBSOCKET_REGISTRATION_URL")
 	registration.SetRegistrationURL(registration_url_env)
 
 	// Test json config
@@ -74,7 +75,7 @@ func TestRegistrationWebsocketServer(t *testing.T) {
 
 	// Start mock channel data
 	topic_value := fmt.Sprintf(`{"test_val": "%s"}`, broadcaster_id)
-	topic_key := fmt.Sprintf(`["%s"]`, broadcaster_id)
+	topic_key := fmt.Sprintf(`["%s", "other-broadcaster-id"]`, broadcaster_id)
 	go func() {
 		for {
 			msg := &(kafka.Message{})
