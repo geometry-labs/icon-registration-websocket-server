@@ -2,6 +2,7 @@ package websockets
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 
@@ -60,7 +61,8 @@ func (ws *KafkaWebsocketServer) readAndFilterKafkaTopic(w http.ResponseWriter, r
 			}
 
 			broadcaster_ids = append(broadcaster_ids, broadcaster_id)
-			_ = c.WriteMessage(websocket.TextMessage, []byte(`{"error": ""}`))
+			registered_msg := fmt.Sprintf(`{"broadcaster_id": "%s"}`, string(broadcaster_id))
+			_ = c.WriteMessage(websocket.TextMessage, []byte(registered_msg))
 
 			defer func() {
 				err := registration.UnregisterBroadcaster(broadcaster_id)
@@ -82,14 +84,19 @@ func (ws *KafkaWebsocketServer) readAndFilterKafkaTopic(w http.ResponseWriter, r
 			_ = json.Unmarshal(msg.Key, &broadcaster_ids_key)
 
 			// Compare local registered ids to msg registered ids
+			wrote_flag := false
 			for _, b := range broadcaster_ids {
+				if wrote_flag == true {
+					break
+				}
 				for _, bk := range broadcaster_ids_key {
 					if string(b) == bk {
 						// Broadcast
-						err = c.WriteMessage(websocket.TextMessage, msg.Value)
-						if err != nil {
-							break
-						}
+						_ = c.WriteMessage(websocket.TextMessage, msg.Value)
+
+						// Raise flag to cancel duplicate messages
+						wrote_flag = true
+						break
 					}
 				}
 			}
