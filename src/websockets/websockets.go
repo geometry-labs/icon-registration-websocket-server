@@ -2,6 +2,7 @@ package websockets
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 
@@ -60,7 +61,8 @@ func (ws *KafkaWebsocketServer) readAndFilterKafkaTopic(w http.ResponseWriter, r
 			}
 
 			broadcaster_ids = append(broadcaster_ids, broadcaster_id)
-			_ = c.WriteMessage(websocket.TextMessage, []byte(`{"error": ""}`))
+			registered_msg := fmt.Sprintf(`{"broadcaster_id": "%s"}`, string(broadcaster_id))
+			_ = c.WriteMessage(websocket.TextMessage, []byte(registered_msg))
 
 			defer func() {
 				err := registration.UnregisterBroadcaster(broadcaster_id)
