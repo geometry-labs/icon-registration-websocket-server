@@ -1,13 +1,14 @@
 package registration
 
 import (
+	"os"
 	"testing"
 )
 
 func TestRegistraterBroadcaster(t *testing.T) {
 
 	// Set Register URL
-	registration_url_env := "35.160.158.191:8008" // os.Getenv("ICON_REGISTRATION_WEBSOCKET_REGISTRATION_URL"
+	registration_url_env := os.Getenv("ICON_REGISTRATION_WEBSOCKET_REGISTRATION_URL")
 	SetRegistrationURL(registration_url_env)
 
 	// Test json config
