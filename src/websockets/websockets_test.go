@@ -8,7 +8,7 @@ import (
 	"gopkg.in/confluentinc/confluent-kafka-go.v1/kafka"
 )
 
-func TestKafkaWebsocketServer(t *testing.T) {
+func TestRegistrationWebsocketServer(t *testing.T) {
 
 	topic_chan := make(chan *kafka.Message)
 
@@ -26,6 +26,7 @@ func TestKafkaWebsocketServer(t *testing.T) {
 		for {
 			msg := &(kafka.Message{})
 			msg.Value = []byte("Test Data")
+			msg.Key = []byte("[\"%s\"]")
 
 			topic_chan <- msg
 
@@ -34,10 +35,9 @@ func TestKafkaWebsocketServer(t *testing.T) {
 	}()
 
 	// Validate message
-	websocket_client, _, err := websocket.DefaultDialer.Dial("ws://localhost:8080/data", nil)
+	websocket_client, _, err := websocket.DefaultDialer.Dial("ws://localhost:8080/", nil)
 	if err != nil {
 		t.Logf("Failed to connect to KafkaWebsocketServer")
-		t.Fail()
 	}
 	defer websocket_client.Close()
 
@@ -51,4 +51,7 @@ func TestKafkaWebsocketServer(t *testing.T) {
 		t.Logf("Failed to validate data")
 		t.Fail()
 	}
+
+	// Pass
+	return
 }
