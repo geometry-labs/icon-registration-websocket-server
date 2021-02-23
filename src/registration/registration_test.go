@@ -16,12 +16,13 @@ func TestRegistraterBroadcaster(t *testing.T) {
 		http.HandleFunc("/broadcaster/unregister", func(w http.ResponseWriter, r *http.Request) {
 			fmt.Fprintf(w, `{"err": ""}`)
 		})
-
 		http.ListenAndServe(":8888", nil)
+		t.Logf("Failed to mock registration api")
+		t.Fail()
 	}()
 
 	// Set Register URL
-	registration_url_env := "ocalhost:8888"
+	registration_url_env := "localhost:8888"
 	SetRegistrationURL(registration_url_env)
 
 	// Test json config

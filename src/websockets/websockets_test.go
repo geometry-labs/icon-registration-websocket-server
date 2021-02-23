@@ -20,7 +20,7 @@ func TestRegistrationWebsocketServer(t *testing.T) {
 		http.HandleFunc("/broadcaster/register", func(w http.ResponseWriter, r *http.Request) {
 			fmt.Fprintf(w, `{"broadcaster_id": "test-broadcaster-id"}`)
 		})
-		log.Fatal(http.ListenAndServe(":8888", nil))
+		http.ListenAndServe(":8888", nil)
 		t.Logf("Failed to mock registration api")
 		t.Fail()
 	}()
