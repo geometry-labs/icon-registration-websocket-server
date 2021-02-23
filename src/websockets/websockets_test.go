@@ -28,6 +28,7 @@ func TestRegistrationWebsocketServer(t *testing.T) {
 
 	// Set Register URL
 	registration_url_env := os.Getenv("ICON_REGISTRATION_WEBSOCKET_REGISTRATION_URL")
+	fmt.Printf("reg_url: %s\n", registration_url_env)
 	registration.SetRegistrationURL(registration_url_env)
 
 	// Test json config
@@ -47,6 +48,8 @@ func TestRegistrationWebsocketServer(t *testing.T) {
 	websocket_client, _, err := websocket.DefaultDialer.Dial("ws://localhost:8080/", nil)
 	if err != nil {
 		t.Logf("Failed to connect to KafkaWebsocketServer")
+		t.Logf("%s", err.Error())
+		t.Fail()
 	}
 	defer websocket_client.Close()
 
@@ -54,6 +57,7 @@ func TestRegistrationWebsocketServer(t *testing.T) {
 	err = websocket_client.WriteMessage(websocket.TextMessage, []byte(register_json))
 	if err != nil {
 		t.Logf("Failed to write to websocket")
+		t.Logf("%s", err.Error())
 		t.Fail()
 	}
 
@@ -61,6 +65,7 @@ func TestRegistrationWebsocketServer(t *testing.T) {
 	_, msg_raw, err := websocket_client.ReadMessage()
 	if err != nil {
 		t.Logf("Failed to read websocket")
+		t.Logf("%s", err.Error())
 		t.Fail()
 	}
 
@@ -68,6 +73,7 @@ func TestRegistrationWebsocketServer(t *testing.T) {
 	err = json.Unmarshal(msg_raw, &msg_json)
 	if err != nil {
 		t.Logf("Failed to parse broadcaster_id")
+		t.Logf("%s", err.Error())
 		t.Fail()
 	}
 
@@ -91,6 +97,7 @@ func TestRegistrationWebsocketServer(t *testing.T) {
 	_, message, err := websocket_client.ReadMessage()
 	if err != nil {
 		t.Logf("Failed to read websocket")
+		t.Logf("%s", err.Error())
 		t.Fail()
 	}
 

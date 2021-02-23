@@ -28,6 +28,7 @@ func TestRegistraterBroadcaster(t *testing.T) {
 	broadcaster_id, err := RegisterBroadcaster([]byte(register_json))
 	if err != nil {
 		t.Logf("Failed to register broadcaster")
+		t.Logf("%s", err.Error())
 		t.Fail()
 	}
 
@@ -40,6 +41,7 @@ func TestRegistraterBroadcaster(t *testing.T) {
 	err = UnregisterBroadcaster(broadcaster_id)
 	if err != nil {
 		t.Logf("Failed to unregister broadcaster")
+		t.Logf("%s", err.Error())
 		t.Fail()
 	}
 
