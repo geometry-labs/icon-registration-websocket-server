@@ -4,11 +4,13 @@ import (
 	"fmt"
 	"net/http"
 	"testing"
+	"time"
 )
 
 func TestRegistraterBroadcaster(t *testing.T) {
 
 	// mock registration api
+	mock_registration_api_port := ":8888"
 	go func() {
 		http.HandleFunc("/broadcaster/register", func(w http.ResponseWriter, r *http.Request) {
 			fmt.Fprintf(w, `{"broadcaster_id": "test-broadcaster-id"}`)
@@ -16,13 +18,16 @@ func TestRegistraterBroadcaster(t *testing.T) {
 		http.HandleFunc("/broadcaster/unregister", func(w http.ResponseWriter, r *http.Request) {
 			fmt.Fprintf(w, `{"err": ""}`)
 		})
-		http.ListenAndServe(":8888", nil)
+		http.ListenAndServe(mock_registration_api_port, nil)
 		t.Logf("Failed to mock registration api")
 		t.Fail()
 	}()
 
+	// Wait for mock registration api
+	time.Sleep(1 * time.Second)
+
 	// Set Register URL
-	registration_url_env := "localhost:8888"
+	registration_url_env := "localhost" + mock_registration_api_port
 	SetRegistrationURL(registration_url_env)
 
 	// Test json config
