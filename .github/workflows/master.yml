@@ -21,4 +21,7 @@ jobs:
         run: docker-compose -f docker-compose.test.yml ps
 
       - name: Check logs
-        run: docker-compose -f docker-compose.test.yml logs kafka-registration-websocket-server
+        run: docker-compose -f docker-compose.test.yml logs icon-registration-websocket-server
+
+      - name: Run test suite
+        run: docker-compose -f docker-compose.test.yml run icon-registration-websocket-server go test ./... -v -timeout 15m

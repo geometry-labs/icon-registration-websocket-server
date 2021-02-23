@@ -18,5 +18,3 @@ COPY --from=builder /build/main /
 CMD ["/main"]
 
 FROM builder as test
-
-CMD ["go", "test", "./.../", "-v", "-timeout", "15m"]
