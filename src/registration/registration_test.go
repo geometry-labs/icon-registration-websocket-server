@@ -1,33 +1,14 @@
 package registration
 
 import (
-	"fmt"
-	"net/http"
+	"os"
 	"testing"
-	"time"
 )
 
 func TestRegistraterBroadcaster(t *testing.T) {
 
-	// mock registration api
-	mock_registration_api_port := ":8888"
-	go func() {
-		http.HandleFunc("/broadcaster/register", func(w http.ResponseWriter, r *http.Request) {
-			fmt.Fprintf(w, `{"broadcaster_id": "test-broadcaster-id"}`)
-		})
-		http.HandleFunc("/broadcaster/unregister", func(w http.ResponseWriter, r *http.Request) {
-			fmt.Fprintf(w, `{"err": ""}`)
-		})
-		http.ListenAndServe(mock_registration_api_port, nil)
-		t.Logf("Failed to mock registration api")
-		t.Fail()
-	}()
-
-	// Wait for mock registration api
-	time.Sleep(1 * time.Second)
-
 	// Set Register URL
-	registration_url_env := "localhost" + mock_registration_api_port
+	registration_url_env := os.Getenv("ICON_REGISTRATION_WEBSOCKET_REGISTRATION_URL")
 	SetRegistrationURL(registration_url_env)
 
 	// Test json config

@@ -9,6 +9,22 @@ services:
       - "8080:8080"
     depends_on:
       - kafka
+      - mock-registration-api
+    environment:
+      ICON_REGISTRATION_WEBSOCKET_OUTPUT_TOPIC: outputs
+      ICON_REGISTRATION_WEBSOCKET_BROKER_URL: kafka:9092
+      ICON_REGISTRATION_WEBSOCKET_REGISTRATION_URL: mock-registration-api:8888
+      ICON_REGISTRATION_WEBSOCKET_PORT: 8080
+      ICON_REGISTRATION_WEBSOCKET_PREFIX: ""
+
+  mock-registration-api:
+    build:
+      context: ./test/mock-registration-api/
+      target: prod
+    ports:
+      - "8888:8888"
+    environment:
+      MOCK_REGISTRATION_API_PORT: "8888"
 
   zookeeper:
     image: confluentinc/cp-zookeeper:5.0.1-1
