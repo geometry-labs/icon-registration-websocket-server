@@ -28,7 +28,6 @@ func TestRegistrationWebsocketServer(t *testing.T) {
 
 	// Set Register URL
 	registration_url_env := os.Getenv("ICON_REGISTRATION_WEBSOCKET_REGISTRATION_URL")
-	fmt.Printf("reg_url: %s\n", registration_url_env)
 	registration.SetRegistrationURL(registration_url_env)
 
 	// Test json config
