@@ -3,7 +3,7 @@ package websockets
 import (
 	"encoding/json"
 	"fmt"
-	"os"
+	"net/http"
 	"testing"
 	"time"
 
@@ -14,6 +14,15 @@ import (
 )
 
 func TestRegistrationWebsocketServer(t *testing.T) {
+
+	// mock registration api
+
+	go func() {
+		http.HandleFunc("/broadcaster/register", func(w http.ResponseWriter, r *http.Request) {
+			fmt.Fprintf(w, `{"broadcaster_id": "test-broadcaster-id"}`)
+		})
+		http.ListenAndServe(":8888", nil)
+	}()
 
 	topic_chan := make(chan *kafka.Message)
 
@@ -27,7 +36,7 @@ func TestRegistrationWebsocketServer(t *testing.T) {
 	go websocket_server.ListenAndServe()
 
 	// Set Register URL
-	registration_url_env := os.Getenv("ICON_REGISTRATION_WEBSOCKET_REGISTRATION_URL")
+	registration_url_env := "localhost:8888"
 	registration.SetRegistrationURL(registration_url_env)
 
 	// Test json config

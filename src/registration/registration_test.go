@@ -1,14 +1,27 @@
 package registration
 
 import (
-	"os"
+	"fmt"
+	"net/http"
 	"testing"
 )
 
 func TestRegistraterBroadcaster(t *testing.T) {
 
+	// mock registration api
+	go func() {
+		http.HandleFunc("/broadcaster/register", func(w http.ResponseWriter, r *http.Request) {
+			fmt.Fprintf(w, `{"broadcaster_id": "test-broadcaster-id"}`)
+		})
+		http.HandleFunc("/broadcaster/unregister", func(w http.ResponseWriter, r *http.Request) {
+			fmt.Fprintf(w, `{"err": ""}`)
+		})
+
+		http.ListenAndServe(":8888", nil)
+	}()
+
 	// Set Register URL
-	registration_url_env := os.Getenv("ICON_REGISTRATION_WEBSOCKET_REGISTRATION_URL")
+	registration_url_env := "localhost:8888"
 	SetRegistrationURL(registration_url_env)
 
 	// Test json config
