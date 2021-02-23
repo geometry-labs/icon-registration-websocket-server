@@ -1,7 +1,7 @@
 version: "3.3"
 
 services:
-  icon-registration-websocket-server:
+  kafka-registration-websocket-server:
     build:
       context: .
       target: test
