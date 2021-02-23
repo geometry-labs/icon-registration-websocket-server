@@ -21,7 +21,7 @@ func TestRegistraterBroadcaster(t *testing.T) {
 	}()
 
 	// Set Register URL
-	registration_url_env := "localhost:8888"
+	registration_url_env := "ocalhost:8888"
 	SetRegistrationURL(registration_url_env)
 
 	// Test json config

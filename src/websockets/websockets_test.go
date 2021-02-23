@@ -16,12 +16,13 @@ import (
 func TestRegistrationWebsocketServer(t *testing.T) {
 
 	// mock registration api
-
 	go func() {
 		http.HandleFunc("/broadcaster/register", func(w http.ResponseWriter, r *http.Request) {
 			fmt.Fprintf(w, `{"broadcaster_id": "test-broadcaster-id"}`)
 		})
-		http.ListenAndServe(":8888", nil)
+		log.Fatal(http.ListenAndServe(":8888", nil))
+		t.Logf("Failed to mock registration api")
+		t.Fail()
 	}()
 
 	topic_chan := make(chan *kafka.Message)
