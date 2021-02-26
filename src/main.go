@@ -23,11 +23,11 @@ func main() {
 
 	if broker_url_env == "" {
 		log.Println("ERROR: required enviroment variable missing: ICON_REGISTRATION_WEBSOCKET_BROKER_URL")
-		return
+		os.Exit(1)
 	}
 	if registration_url_env == "" {
 		log.Println("ERROR: required enviroment variable missing: ICON_REGISTRATION_WEBSOCKET_REGISTRATION_URL")
-		return
+		os.Exit(1)
 	}
 	if output_topic_env == "" {
 		output_topic_env = "outputs"
