@@ -17,8 +17,14 @@ func TestRegistrationWebsocketServer(t *testing.T) {
 
 	topic_chan := make(chan *kafka.Message)
 
-	websocket_server := KafkaWebsocketServer{
+	broadcaster := &TopicBroadcaster{
 		topic_chan,
+		make(map[BroadcasterID]chan *kafka.Message),
+	}
+	go broadcaster.Broadcast()
+
+	websocket_server := KafkaWebsocketServer{
+		broadcaster,
 		"8080",
 		"",
 	}
