@@ -56,9 +56,19 @@ func main() {
 	go kafka_consumer.ConsumeAndBroadcastTopics()
 	log.Println("Kafka consumer started...")
 
+	// Create broadcaster
+	broadcaster := &websockets.TopicBroadcaster{
+		output_topic_chan,
+		make(map[websockets.BroadcasterID]chan *kafka.Message),
+	}
+
+	// Start broadcaster
+	go broadcaster.Broadcast()
+	log.Printf("Topic broadcaster started...")
+
 	// Create server
 	websocket_server := websockets.KafkaWebsocketServer{
-		output_topic_chan,
+		broadcaster,
 		port_env,
 		prefix_env,
 	}

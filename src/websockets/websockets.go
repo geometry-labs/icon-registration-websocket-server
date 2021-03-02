@@ -13,9 +13,9 @@ import (
 )
 
 type KafkaWebsocketServer struct {
-	TopicChan chan *kafka.Message
-	Port      string
-	Prefix    string
+	Broadcaster *TopicBroadcaster
+	Port        string
+	Prefix      string
 }
 
 func (ws *KafkaWebsocketServer) ListenAndServe() {
@@ -41,6 +41,14 @@ func (ws *KafkaWebsocketServer) readAndFilterKafkaTopic(w http.ResponseWriter, r
 		return
 	}
 	defer c.Close()
+
+	// Add broadcaster
+	topic_chan := make(chan *kafka.Message)
+	id := ws.Broadcaster.AddWebsocketChannel(topic_chan)
+	defer func() {
+		// Remove broadcaster
+		ws.Broadcaster.RemoveWebsocketChannel(id)
+	}()
 
 	// Close signal from client
 	client_close_sig := make(chan bool)
@@ -78,7 +86,7 @@ func (ws *KafkaWebsocketServer) readAndFilterKafkaTopic(w http.ResponseWriter, r
 	go func() {
 		for {
 			// Read
-			msg := <-ws.TopicChan
+			msg := <-topic_chan
 
 			var broadcaster_ids_key []string
 			_ = json.Unmarshal(msg.Key, &broadcaster_ids_key)
