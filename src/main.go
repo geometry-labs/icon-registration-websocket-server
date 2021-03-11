@@ -82,13 +82,7 @@ func main() {
 	signal.Notify(sigCh, os.Interrupt, syscall.SIGTERM, syscall.SIGKILL)
 
 	// Keep main thread alive
-	for {
-		select {
-		case <-sigCh:
-			log.Println("Stopping server...")
-			return
-		default:
-			continue
-		}
+	for sig := range sigCh {
+		log.Printf("Stopping registration websocket server...%s", sig.String())
 	}
 }
